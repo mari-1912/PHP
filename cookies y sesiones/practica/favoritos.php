@@ -78,8 +78,9 @@ $favoritos = isset($_SESSION['favoritos']) ? implode(", ", $_SESSION['favoritos'
     
     <h2>Tus Platos Favoritos:</h2>
     <p><?php echo $favoritos; ?></p>
-    
-    <a href="principales.php">Volver a Platos Principales</a> ||
+    <br><br>
+    <a href="supermercado.php">Inicio</a> ||
+    <a href="principales.php">Principales</a> ||
     <a href="postres.php">Postres</a> ||
     <a href="bebidas.php">Bebidas</a> ||
     <a href="carrito.php">Ver Carrito</a> ||
