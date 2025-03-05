@@ -11,27 +11,43 @@ $usuario = $_SESSION["usuario_sesion"]["usuario"];
 
 // Procesar selección de bebidas
 if (isset($_GET['bebidas']) && is_array($_GET['bebidas'])) {
-    $_SESSION['bebidas'] = array_filter($_GET['bebidas'], function($cantidad) {
+    $_SESSION['bebidas'] = array_merge($_SESSION['bebidas'] ?? [], array_filter($_GET['bebidas'], function($cantidad) {
         return $cantidad > 0;
-    }); // Guarda solo las bebidas con cantidad mayor a 0
+    })); // Mantiene los valores previos y agrega los nuevos
     header("Location: carrito.php");
     exit();
 }
 
 // Recuperar valores de sesión o establecer mensaje por defecto
-$principales = isset($_SESSION['principales']) ? implode(", ", array_map(function($plato, $cantidad) {
-    return "$plato : $cantidad";
-}, array_keys($_SESSION['principales']), $_SESSION['principales'])) : "Aún no has seleccionado nada";
+// Recuperar valores de sesión o establecer mensaje por defecto
+$principales = "Aún no has seleccionado nada";
+if (isset($_SESSION['principales']) && count($_SESSION['principales']) > 0) {
+    $principales = "";
+    foreach ($_SESSION['principales'] as $plato => $cantidad) {
+        $principales .= "$plato : $cantidad, ";
+    }
+    $principales = rtrim($principales, ", "); // Eliminar la última coma
+}
 
-$postres = isset($_SESSION['postres']) ? implode(", ", array_map(function($postre, $cantidad) {
-    return "$postre : $cantidad";
-}, array_keys($_SESSION['postres']), $_SESSION['postres'])) : "Aún no has seleccionado nada";
+$postres = "Aún no has seleccionado nada";
+if (isset($_SESSION['postres']) && count($_SESSION['postres']) > 0) {
+    $postres = "";
+    foreach ($_SESSION['postres'] as $postre => $cantidad) {
+        $postres .= "$postre : $cantidad, ";
+    }
+    $postres = rtrim($postres, ", ");
+}
 
-$bebidas = isset($_SESSION['bebidas']) ? implode(", ", array_map(function($bebida, $cantidad) {
-    return "$bebida : $cantidad";
-}, array_keys($_SESSION['bebidas']), $_SESSION['bebidas'])) : "Aún no has seleccionado nada";
+$bebidas = "Aún no has seleccionado nada";
+if (isset($_SESSION['bebidas']) && count($_SESSION['bebidas']) > 0) {
+    $bebidas = "";
+    foreach ($_SESSION['bebidas'] as $bebida => $cantidad) {
+        $bebidas .= "$bebida : $cantidad, ";
+    }
+    $bebidas = rtrim($bebidas, ", ");
+}
 
-$platos_bebidas = ['Coca Cola', 'Nestea', 'Vino', 'Cerveza', 'Botella de agua'];
+$lista_bebidas = ['Agua', 'Coca-Cola', 'Jugo de naranja', 'Vino', 'Cerveza'];
 
 ?>
 
@@ -48,22 +64,23 @@ $platos_bebidas = ['Coca Cola', 'Nestea', 'Vino', 'Cerveza', 'Botella de agua'];
     <form action="" method="GET">
         <label for="bebidas">Selecciona las bebidas: </label>
         <ul>
-            <?php foreach($platos_bebidas as $bebida): ?>
+            <?php foreach($lista_bebidas as $bebida): ?>
                 <li>
                     <label><?php echo $bebida; ?></label>
-                    <input type="number" name="bebidas[<?php echo $bebida; ?>]" value="0" min="0">
+                    <input type="number" name="bebidas[<?php echo $bebida; ?>]" value="<?php echo $_SESSION['bebidas'][$bebida] ?? 0; ?>" min="0">
                 </li>
             <?php endforeach; ?>
         </ul>
         <input type="submit" value="Añadir">
     </form>
-
+    
     <br><br>
-    <a href="postres.php">Postres</a> ||
+    <a href="supermercado.php">Inicio</a> ||
     <a href="principales.php">Principales</a> ||
+    <a href="postres.php">Postres</a> ||
     <a href="carrito.php">Ver Carrito</a> ||
-    <a href="logout.php">Salir</a> ||
-    <a href="favoritos.php"></a>
+    <a href="favoritos.php">Ver favoritos</a> ||
+    <a href="logout.php">Salir</a>
     
     <h2>Resumen de selección:</h2>
     <p><strong>Platos principales:</strong> <?php echo $principales; ?></p>
